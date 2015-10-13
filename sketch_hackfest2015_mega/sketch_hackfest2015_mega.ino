@@ -7,7 +7,7 @@
 
 #define LED_PIN 13
 #define CONTRAST_PIN  10
-#define BACKLIGHT_PIN 8
+#define BACKLIGHT_PIN 9
 #define CONTRAST      125
 
 #define LED_LIGHT_UP 0

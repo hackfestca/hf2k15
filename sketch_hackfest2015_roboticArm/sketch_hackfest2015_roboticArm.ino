@@ -1,84 +1,96 @@
 #include <Wire.h>   // Uno: A4 (SDA), A5 (SCL)
-// Mega: 20 (SDA), 21 (SCL)
+                    // Mega: 20 (SDA), 21 (SCL)
 
 #include <SPI.h>    // Uno: 11 (MOSI), 12 (MISO), 13 (SCK)
-// Mega: 51 (MOSI), 50 (MISO), 52 (SCK)
+                    // Mega: 51 (MOSI), 50 (MISO), 52 (SCK)
 
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
 
-#define SLAVE_ADDRESS 0x05
-
-#define SCK_PIN   13
-#define MISO_PIN  12
-#define MOSI_PIN  11
-#define SS_PIN    10
+#define SCK_PIN       13
+#define MISO_PIN      12
+#define MOSI_PIN      11
+#define SS_PIN        10
+#define PHOTOCELL_PIN 1
 
 #define M1 0
 #define M2 1
 #define M3 2
 #define M4 3
 
+#define FLAG1 "DF(*SD&?F/$JKHSD)F"
+#define FLAG2 "DF(SDF(*&?SDF(*&?*(&?"
+
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-Adafruit_DCMotor *myMotor = AFMS.getMotor(4);
+Adafruit_DCMotor *myMotor[4];
 
-char incomingByte;   // for incoming serial data
+// motor related
+char cmd = 'x';
+char lastCmd = 'x';
+unsigned long lastSent;
+boolean isMoving = false;
 
-unsigned long spi_lastSent;
+// light level sensor
+int lightLevel = 0;
 
 void setup(void) {
   Serial.begin(9600);
 
-  // initialize i2c as slave
-  //Wire.begin(SLAVE_ADDRESS);
-
-  // define callbacks for i2c communication
-  //Wire.onReceive(i2c_receiveData);
-  //Wire.onRequest(i2c_sendData);
-
-  //myMotor = AFMS.getMotor(1);
+  myMotor[M1] = AFMS.getMotor(1);
+  myMotor[M2] = AFMS.getMotor(2);
+  myMotor[M3] = AFMS.getMotor(3);
+  myMotor[M4] = AFMS.getMotor(4);
   AFMS.begin();
 
   // SPI
   spi_SlaveInit();
-  spi_lastSent = millis();
+  lastSent = millis();
 
   Serial.println("Ready!");
 }
 
 void loop(void) {
-  // send data only when you receive data:
+  // Process serial inputs
   if (Serial.available() > 0) {
     // read the incoming byte:
-    incomingByte = Serial.read();
+    cmd = Serial.read();
 
     // say what you got:
-    Serial.print("I received: ");
-    Serial.println(incomingByte, DEC);
+    Serial.print("Received (serial): ");
+    Serial.println(cmd, DEC);
 
-    do_command((char)incomingByte);
+    do_command(cmd);
   }
 
+  // Process SPI inputs
   if (digitalRead(SS_PIN) == LOW) {
     Serial.println("Pin 10 low...");
-    byte rxData;
-    rxData = spi_ReadByte();
-    Serial.print("Command: ");
-    Serial.println(rxData, DEC);
-    if (rxData == 17) {
-      Serial.println("Sending data to master...");
-      spi_WriteByte(19);
-      Serial.println("Done Sending data...");
-    }
-  }
-  if (millis() > spi_lastSent + 2000) {
-    Serial.println("Pin 5 low...");
-    digitalWrite(5, LOW);
-    delay(10);
-    digitalWrite(5, HIGH);
-    spi_lastSent = millis();
+    cmd = spi_ReadByte();
+    Serial.print("Received (SPI): ");
+    Serial.println(cmd);
+    lastSent = millis();
+    lastCmd = cmd;
+    
+    do_command(cmd);
   }
 
+  // Stop conditions. 
+  // 1- Stop if the same command was invoked but left in the last 200ms
+  // 2- Stop if a different command is invoked
+  if(isMoving){
+    if(cmd == lastCmd && (millis() - 200) > lastSent){
+      stopMotor();
+    }
+  
+    if(cmd != lastCmd){
+      stopMotor();
+    }
+  }
+
+  lightLevel = analogRead(PHOTOCELL_PIN);
+  if(lightLevel > 900){
+    sendFlag(FLAG2);
+  }
   //delay(1000);
 }
 
@@ -111,14 +123,40 @@ void do_command(char x) {
   switch (x) {
     case 'w': runMotor(M1, FORWARD); break;
     case 's': runMotor(M1, BACKWARD); break;
+    case 'a': runMotor(M2, FORWARD); break;
+    case 'd': runMotor(M2, BACKWARD); break;    
+    case 'i': runMotor(M3, FORWARD); break;
+    case 'k': runMotor(M3, BACKWARD); break;
+    case 'j': runMotor(M4, FORWARD); break;
+    case 'l': runMotor(M4, BACKWARD); break;        
+    case '_': sendFlag(FLAG1); break;
     default: break;
   }
 }
 
 void runMotor(int m, int d) {
-  myMotor->setSpeed(100);
-  myMotor->run(d);
-  delay(100);
-  myMotor->run(RELEASE);
+  isMoving = true;
+  Serial.print("Running motor ");
+  Serial.print(m);
+  Serial.print(" in direction ");
+  Serial.println(d);
+  myMotor[m]->setSpeed(100);
+  myMotor[m]->run(d);
+  delay(150);
+  //myMotor[m]->run(RELEASE); // Was removed for more fluidity
 }
+
+void stopMotor(){
+  isMoving = false;
+  Serial.println("Stopping motors");
+  for(int i=0; i<4; i++){
+    myMotor[i]->run(RELEASE);
+  }
+}
+
+void sendFlag(String flagValue){
+  Serial.println("Sending flag!");
+  SPI.transfer((void*)flagValue.c_str(),flagValue.length());
+}
+
 

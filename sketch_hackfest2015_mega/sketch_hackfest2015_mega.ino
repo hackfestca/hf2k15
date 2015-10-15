@@ -2,9 +2,9 @@
                     // Mega: 20 (SDA), 21 (SCL)
 #include "U8glib.h"
 #include <IRremote.h>
-#include <AESLib.h>
+#include <AESLib.h>   // https://github.com/DavyLandman/AESLib
 
-#define SLAVE_ADDRESS 0x04
+#define I2C_ADDRESS 0x04
 
 #define LED_PIN 13
 #define CONTRAST_PIN  10
@@ -21,21 +21,24 @@
 #define LCD_TOP 2
 
 #define FLAG_CASINO "FLAAAAAAAAAG"
-#define I2C_FLAG "FLAGAGAGAGAGAGAG"
+#define I2C_FLAG "FLAGFLAGFLAGFLAG"
 
 IRsend irsend;  //Default: pin 3 on Uno, 9 on Mega
 
 U8GLIB_ST7920_128X64 u8g(13, 12, 11, U8G_PIN_NONE); // SPI connection
 
 boolean FLAG_READY = false;
-String FLAG_KEY = "";
+uint8_t FLAG_KEY[17];
+char FLAG_ENC[17];
+
+String lastNews;
 
 /* setup() */
 void setup(void) {
   Serial.begin(9600);
 
   // initialize i2c as slave
-  Wire.begin(SLAVE_ADDRESS); 
+  Wire.begin(I2C_ADDRESS); 
   
   // define callbacks for i2c communication
   Wire.onReceive(i2c_receiveData);
@@ -46,7 +49,7 @@ void setup(void) {
   pinMode(BACKLIGHT_PIN, OUTPUT);
   digitalWrite(BACKLIGHT_PIN, HIGH);
   analogWrite(CONTRAST_PIN, CONTRAST);
-  u8g.setColorIndex(1); // Affichage en mode N&B (obligatoire vu que  l'on a pas un Ã©cran couleur)
+  u8g.setColorIndex(1);
 
   Serial.println("Ready!");
 }
@@ -84,19 +87,13 @@ void i2c_receiveData(int byteCount){
 
 // callback for sending data
 void i2c_sendData(){
-  char key[32];
-  char data[32];
-
-  FLAG_KEY.toCharArray(key, FLAG_KEY.length());
-  strncpy(I2C_FLAG, data, 32);
-  
   if(FLAG_READY){
-    Serial.println("Sending flag");
-    aes128_enc_single((uint8_t*)key, data);
-    Wire.write(data);
+    Serial.print("Sending flag: ");
+    Serial.println(FLAG_ENC);
+    Wire.write(FLAG_ENC);
   }else{
-    Serial.println("nop");
-    Wire.write("nop");
+    Serial.println("no rsa128 key found");
+    Wire.write("no rsa128 key found");
   }
 }
 
@@ -125,17 +122,28 @@ void updateTop(String args){
 }
 
 void updateFlag(String args){
-  if(args.length() >= 16){
+   if(args.length() == 16){
     Serial.print("Updating flag key: ");
     Serial.println(args);
-    FLAG_READY = !FLAG_READY;
-    FLAG_KEY = args;
+    FLAG_READY = true;
+    
+    // Converting key
+    for(int i=0; i<args.length(); i++){
+      FLAG_KEY[i] = (uint8_t)args[i];
+    }
+    FLAG_KEY[16] = (uint8_t)'\x00';
+
+    // Encrypting flag
+    strncpy(FLAG_ENC, I2C_FLAG, 16);
+    aes128_enc_single(FLAG_KEY, FLAG_ENC);
   }else{
     Serial.println("Key too small");
   }
 }
 
 void draw(void){
+  int chgPageDelay = 1000;
+  
   // Global settings
   u8g.setRot180();
 
@@ -144,14 +152,14 @@ void draw(void){
   do {
     drawBanner();
   } while (u8g.nextPage());  
-  delay(1000);
+  delay(chgPageDelay);
 
   // Print news
   u8g.firstPage();
   do {
     drawNews();
   } while (u8g.nextPage());  
-  delay(1000);
+  delay(chgPageDelay);
 }
 
 void drawBanner(void) {

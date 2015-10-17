@@ -11,6 +11,12 @@
 #define BACKLIGHT_PIN 9
 #define CONTRAST      125
 
+#define PIPELINE_PIN1 29 //44
+#define PIPELINE_PIN2 27 //46
+#define PIPELINE_PIN3 25 //48
+#define PIPELINE_PIN4 23 //50
+#define PIPELINE_PUMP_PIN 21 //52
+
 #define LED_LIGHT_UP 0
 #define LED_LIGHT_DOWN 1
 #define LED_LIGHT_UP 2
@@ -20,8 +26,7 @@
 #define LCD_NEWS 1
 #define LCD_TOP 2
 
-#define FLAG_CASINO "FLAAAAAAAAAG"
-#define I2C_FLAG "FLAGFLAGFLAGFLAG"
+#define FLAG3 "FLAGFLAGFLAGFLAG"
 
 IRsend irsend;  //Default: pin 3 on Uno, 9 on Mega
 
@@ -51,15 +56,50 @@ void setup(void) {
   analogWrite(CONTRAST_PIN, CONTRAST);
   u8g.setColorIndex(1);
 
+  // Initialize pipeline
+  pinMode(PIPELINE_PIN1,OUTPUT);
+  pinMode(PIPELINE_PIN2,OUTPUT);
+  pinMode(PIPELINE_PIN3,OUTPUT);
+  pinMode(PIPELINE_PIN4,OUTPUT);
+  pinMode(PIPELINE_PUMP_PIN,OUTPUT);
+  digitalWrite(PIPELINE_PIN1,LOW);
+  digitalWrite(PIPELINE_PIN2,LOW);
+  digitalWrite(PIPELINE_PIN3,LOW);
+  digitalWrite(PIPELINE_PIN4,LOW);
+  digitalWrite(PIPELINE_PUMP_PIN,HIGH);
+
   Serial.println("Ready!");
 }
 
 /* loop() */
 void loop(void) {
+  char c;
+  String msg;
+  char cmd;
+  String args;
   draw();
 
-  Serial.println("Waiting");
-  delay(1000);
+  // Process serial inputs
+  if (Serial.available() > 0) {
+    while(Serial.available()) {
+      c = (char)Serial.read();
+      msg += c;
+    }
+
+    // say what you got:
+    Serial.print("Received (serial): ");
+    Serial.println(msg);
+
+    cmd = msg.substring(0,1).c_str()[0];
+    args = msg.substring(1);
+  
+    do_command(cmd,args);
+  }
+
+  // reset pipeline pins to LOW
+    
+  //Serial.println("Waiting");
+  //delay(1000);
   //setModelLed(LED_LIGHT_OFF);
 }
 
@@ -92,8 +132,8 @@ void i2c_sendData(){
     Serial.println(FLAG_ENC);
     Wire.write(FLAG_ENC);
   }else{
-    Serial.println("no rsa128 key found");
-    Wire.write("no rsa128 key found");
+    Serial.println("no aes128 key found");
+    Wire.write("no aes128 key found");
   }
 }
 
@@ -105,6 +145,8 @@ void do_command(char cmd, String args){
     case 'n': updateNews(args); break;
     case 't': updateTop(args); break;
     case 'f': updateFlag(args); break;
+    case 'p': setPipelinePin(args); break;
+    case 'r': runPipe(args); break;
     default: break;
   }  
 }
@@ -134,11 +176,32 @@ void updateFlag(String args){
     FLAG_KEY[16] = (uint8_t)'\x00';
 
     // Encrypting flag
-    strncpy(FLAG_ENC, I2C_FLAG, 16);
+    strncpy(FLAG_ENC, FLAG3, 16);
     aes128_enc_single(FLAG_KEY, FLAG_ENC);
   }else{
     Serial.println("Key too small");
   }
+}
+
+void setPipelinePin(String args){
+  int pin = args.toInt();
+  switch (pin) {
+    case 10: digitalWrite(PIPELINE_PIN1,LOW); break;  
+    case 11: digitalWrite(PIPELINE_PIN1,HIGH); break;  
+    case 20: digitalWrite(PIPELINE_PIN2,LOW); break;  
+    case 21: digitalWrite(PIPELINE_PIN2,HIGH); break;  
+    case 30: digitalWrite(PIPELINE_PIN3,LOW); break;  
+    case 31: digitalWrite(PIPELINE_PIN3,HIGH); break;  
+    case 40: digitalWrite(PIPELINE_PIN4,LOW); break;  
+    case 41: digitalWrite(PIPELINE_PIN4,HIGH); break;
+    default: break;
+  }
+}
+
+void runPipe(String args){
+  digitalWrite(PIPELINE_PUMP_PIN,LOW);
+  delay(1000);
+  digitalWrite(PIPELINE_PUMP_PIN,HIGH);
 }
 
 void draw(void){
@@ -174,9 +237,6 @@ void drawBanner(void) {
 
   u8g.setFont(u8g_font_6x10);
   u8g.drawStr(4, 50, "Welcome in Hell");
-
-  //Send also the flag
-  u8g.drawStr(128, 128, FLAG_CASINO);
 }
 
 void drawNews(void) {

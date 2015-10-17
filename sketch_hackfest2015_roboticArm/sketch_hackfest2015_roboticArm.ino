@@ -87,10 +87,6 @@ void loop(void) {
     }
   }
 
-  lightLevel = analogRead(PHOTOCELL_PIN);
-  if(lightLevel > 900){
-    sendFlag(FLAG2);
-  }
   //delay(1000);
 }
 
@@ -129,7 +125,7 @@ void do_command(char x) {
     case 'k': runMotor(M3, BACKWARD); break;
     case 'j': runMotor(M4, FORWARD); break;
     case 'l': runMotor(M4, BACKWARD); break;        
-    case '_': sendFlag(FLAG1); break;
+    case '_': sendFlag(); break;
     default: break;
   }
 }
@@ -154,7 +150,14 @@ void stopMotor(){
   }
 }
 
-void sendFlag(String flagValue){
+void sendFlag(){
+  String flagValue;
+
+  if(lightLevel < 900){
+    flagValue = FLAG1;    
+  }else{
+    flagValue = FLAG2;
+  }
   Serial.println("Sending flag!");
   SPI.transfer((void*)flagValue.c_str(),flagValue.length());
 }

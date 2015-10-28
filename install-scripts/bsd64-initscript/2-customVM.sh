@@ -184,7 +184,7 @@ hostname $HOST
 
 # Configure MOTD
 echo $TEXT_COLOR''Setting up /etc/motd''$DEFAULT_COLOR
-./sh/genMotdHeader.sh -t "HF 2014" files/motd/motd.header
+./sh/genMotdHeader.sh -t "HF 2015" files/motd/motd.header
 ./sh/genMotd.sh -z $ZONE -o $OWNER "files/motd/$HOST.motd"
 echo 'this string will be overwritten at reboot' >  /etc/motd    
 echo '' >> /etc/motd                    # Blank line to prevent overwrite at reboot
@@ -209,14 +209,14 @@ fi
 # Configure /etc/hostname.em0
 echo $TEXT_COLOR''Setting up /etc/hostname.em0''$DEFAULT_COLOR
 cat > /etc/hostname.em0 <<EOF
-# Hackfest 2014
+# Hackfest 2015
 inet $IP $NETMASK
 EOF
 
 # Configure /etc/mygate
 echo $TEXT_COLOR''Setting up /etc/mygate''$DEFAULT_COLOR
 cat > /etc/mygate <<EOF
-# Hackfest 2014
+# Hackfest 2015
 $GATEWAY
 EOF
 

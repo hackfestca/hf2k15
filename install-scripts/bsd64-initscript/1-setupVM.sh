@@ -23,14 +23,14 @@ echo $TEXT_COLOR''Generating new ssh keys''$DEFAULT_COLOR
 /usr/bin/ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
 
 # Set authorized_keys
-if [ ! -d ~/.ssh ]
-then
-	echo $TEXT_COLOR''.ssh folder doesn\' exist, creating.''$DEFAULT_COLOR
-	/bin/mkdir ~/.ssh
-fi
-echo $TEXT_COLOR''Setting up authorized_keys''$DEFAULT_COLOR
-/bin/cat files/ssh-keys/martin.pub > ~/.ssh/authorized_keys
-/bin/cat files/ssh-keys/scoreboard-mon.pub >> ~/.ssh/authorized_keys
+#if [ ! -d ~/.ssh ]
+#then
+#	echo $TEXT_COLOR''.ssh folder doesn\' exist, creating.''$DEFAULT_COLOR
+#	/bin/mkdir ~/.ssh
+#fi
+#echo $TEXT_COLOR''Setting up authorized_keys''$DEFAULT_COLOR
+#/bin/cat files/ssh-keys/martin.pub > ~/.ssh/authorized_keys
+#/bin/cat files/ssh-keys/scoreboard-mon.pub >> ~/.ssh/authorized_keys
 
 echo $TEXT_COLOR''Updating motd file''$DEFAULT_COLOR
 /bin/cp files/motd/motd.tbd /etc/motd

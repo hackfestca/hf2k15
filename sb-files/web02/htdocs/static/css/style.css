@@ -1,0 +1,183 @@
+
+.body {
+  padding-top: 100px;
+  padding-bottom: 30px;
+  background-color: #000000;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  color: #FFFFFF;
+}
+
+.projector {
+  padding-top: 2%;
+  //padding-bottom: 2%;
+  background-color: #000000;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  color: #FFFFFF;
+}
+
+
+.nav, .navbar {
+    background: rgba(0, 0, 0, 1);
+    border-color: #FFFFFF;
+}
+
+.navbar-nav {
+    background: rgba(255, 255, 255, 0);
+}
+
+.navbar-inverse .navbar-nav>li>a:hover,
+.navbar-inverse .navbar-nav>li>a:focus {
+    color: #009c00;
+}
+
+/* Change the highlighting color */
+.table tbody tr:hover td {
+    background-color: #323232;
+}
+
+.team-highlight {
+    background-color: #009a00;
+    color: #000000;
+}
+
+.table tbody tr.team-highlight:hover td {
+    background-color: #00c500;
+}
+
+.jumbotron {
+   background-color: #000000;
+   border-style: solid; 
+   border-width: 1px;
+   border-color: #FFFFFF;
+   padding-top: 24px;
+   padding-bottom: 24px;
+}
+
+/* Style for the challenges bages */
+.challs {
+    margin-left: 23%;
+    margin-right:23%;
+}
+
+.challs:hover {
+    background-color: #242424;
+}
+
+.challs > .container > p {
+    font-size: 14px;
+    text-align: justify;
+}
+
+.challs > .container > h3 {
+    margin-top: 0px;
+}
+
+.category-title > a {
+    font-weight: bold;
+    color: #808080;
+}
+
+.score {
+    text-align: right;
+}
+
+.body > .main-row {
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.projector > .main-row {
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+.news, .score_panel {
+    height: 716px;
+    overflow: auto;
+}
+
+.team-info {
+    color: #ec9900;
+}
+
+#challenge-pb {
+    background-color: #009a00;
+}
+
+@media (min-width: 768px) {
+    .table-score {
+	margin-left: 20%;
+	margin-right: 20%;
+    }
+}
+
+
+@media (max-width: 991px) {
+    .navbar-header {
+        float: none;
+    }
+    .navbar-toggle {
+        display: block;
+    }
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .navbar-collapse.collapse {
+        display: none!important;
+    }
+    .navbar-nav {
+        float: none!important;
+        margin: 7.5px -15px;
+    }
+    .navbar-nav>li {
+        float: none;
+    }
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    /* since 3.1.0 */
+    .navbar-collapse.collapse.in { 
+        display: block!important;
+    }
+    .collapsing {
+        overflow: hidden!important;
+    }
+}
+
+dl {
+    word-wrap: break-word;
+}
+
+.footer {
+    text-align: center;
+}
+
+a:link {
+    color: #009c00;
+}
+
+a:visited {
+    color: #009c00;
+}
+
+.hf-green {
+    color: #009C00;
+}
+
+.hf-orange {
+    color: #ec9900;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}

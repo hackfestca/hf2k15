@@ -50,7 +50,7 @@ if sys.version_info < (3,2,0):
 sys.path.insert(0, 'sblib')
 
 
-import config, ClientController
+import config, ModelController
 from Crypto.Cipher import AES
 import binascii
 import quick2wire.i2c as i2c
@@ -58,10 +58,12 @@ import quick2wire.spi as spi
 import curses
 from time import sleep
 
-class CasinoController(ClientController.ClientController):
+class CasinoController(ModelController.ModelController):
     i2cAddr = 0x04
 
     def __init__(self):
+        self.initLogging()
+
         self._sUser = config.DB_RPI_USER
         self._sPass = config.DB_RPI_PASS
         self._sCrtFile = config.DB_RPI_CRT_FILE
@@ -74,16 +76,26 @@ class CasinoController(ClientController.ClientController):
                 i2c.writing(self.i2cAddr, msg))
     
     def updateCountDown(self):
-        cd = self._exec('getModelCountDown()').encode('utf-8')
+        self.logger.info('Updating count down')
+        cd = self._exec('getModelCountDown').encode('utf-8')
+        self.logger.info('Received from DB: %s' % cd)
         self._send_i2c(b'c'+cd)
     
     def updateNews(self):
-        news = self._exec('getModelNews()')
-        self._send_i2c(b'n'+news)
+        for i in range(0,5):
+            self.logger.info('Updating news[%s]' % i)
+            news = self._exec('getModelNews',i).encode('utf-8')
+            self.logger.info('Received from DB: %s' % news)
+            self._send_i2c(b'n'+bytes(i)+news)
+            sleep(1)
     
     def updateTopTeams(self):
-        topTeams = self._exec('getModelTopTeams()')
-        self._send_i2c(b't'+topTeams)
+        for i in range(0,3):
+            self.logger.info('Updating Top Teams[%s]' % i)
+            topTeams = self._exec('getModelTeamsTop',i).encode('utf-8')
+            self.logger.info('Received from DB: %s' % topTeams)
+            self._send_i2c(b't'+bytes(i)+topTeams)
+            sleep(1)
     
     def getI2CFlag1(self,key):
         self._send_i2c(b'f'+key)
@@ -103,8 +115,9 @@ class CasinoController(ClientController.ClientController):
             print(b'Flag is: ' + flag)
     
 
-class RoboticArmController(ClientController.ClientController):
+class RoboticArmController(ModelController.ModelController):
     def __init__(self):
+        self.initLogging()
         self._sUser = config.DB_RPI_USER
         self._sPass = config.DB_RPI_PASS
         self._sCrtFile = config.DB_RPI_CRT_FILE
@@ -140,12 +153,14 @@ class RoboticArmController(ClientController.ClientController):
             print(flag)
 
 
-
-
 c = CasinoController()
 #key = b'ZZZZZZZZZZZZZZZZ'
 #c.getI2CFlag1(key)
 c.updateCountDown()
+sleep(1)
+c.updateNews()
+sleep(1)
+c.updateTopTeams()
 
 #c = RoboticArmController()
 #c.send_spi_live()

@@ -11,7 +11,6 @@
 
 #define I2C_ADDRESS 0x05
 
-
 #define PIPELINE_PIN1 29 //44
 #define PIPELINE_PIN2 27 //46
 #define PIPELINE_PIN3 25 //48
@@ -20,8 +19,8 @@
 
 #define FLOWMETER_PIN 6
 
-#define FLAG3 "FLAGFLAGFLAGFLAG"
-#define FLAG4 "FLAGFLAGFLAGFLAG"
+#define FLAG2 "tU6yTmaXaSyIOSUC0PcUWkJgAnNIxGE2"    // update flag through SPI and AES128 decrypt it.
+#define FLAG3 "oKoupgMXvvILwFSwg0cULgkGWPKzA6YR"    // Do something sexy with the pipeline. Not implemented yet.
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
@@ -242,8 +241,8 @@ void updateFlowMeterValue(){
   //lcd.print("Pulses:"); lcd.print(pulses, DEC);
   lcd.print("Flow: "); lcd.print(flowrate); lcd.print("L/hr");
   //lcd.print(flowrate);
-  //Serial.print("Freq: "); Serial.println(flowrate);
-  //Serial.print("Pulses: "); Serial.println(pulses, DEC);
+  Serial.print("Freq: "); Serial.println(flowrate);
+  Serial.print("Pulses: "); Serial.println(pulses, DEC);
   
   // if a plastic sensor use the following calculation
   // Sensor Frequency (Hz) = 7.5 * Q (Liters/min)
@@ -261,10 +260,10 @@ void updateFlowMeterValue(){
     liters -= 6;
     liters /= 60.0;
   */
-  //Serial.print(liters); Serial.println(" Liters");
+  Serial.print(liters); Serial.println(" Liters");
   lcd.setCursor(0, 1);
   lcd.print(liters); lcd.print(" Liters        ");
- 
+   
   delay(300);
 }
 

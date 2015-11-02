@@ -18,8 +18,8 @@
 #define M3 2
 #define M4 3
 
-#define FLAG1 "DF(*SD&?F/$JKHSD)F"
-#define FLAG2 "DF(SDF(*&?SDF(*&?*(&?"
+#define FLAG4 "yADvkHWQBzO1QLvEb1g5HYeadTZm13FK"
+#define FLAG5 "E3Lrpcd35X8nUxTxjyBGVBgFJ2Id8xmp"
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *myMotor[4];

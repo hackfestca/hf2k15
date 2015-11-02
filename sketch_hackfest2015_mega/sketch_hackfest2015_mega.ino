@@ -31,9 +31,11 @@
 #define LCD_NEWS 1
 #define LCD_TOP 2
 
+#define FLAG1 "Vk9xRcdsYSovkfNtiOQ6UwJoMBmhHneU"    // Serial
+
 IRsend irsend;  //Default: pin 3 on Uno, 9 on Mega
 
-U8GLIB_ST7920_128X64 u8g(22, 23, 2, U8G_PIN_NONE); // SPI connection
+U8GLIB_ST7920_128X64 u8g(22, 23, 2, U8G_PIN_NONE); // SPI connection, blanc, vert, orange
 
 boolean FLAG_READY = false;
 uint8_t FLAG_KEY[17];

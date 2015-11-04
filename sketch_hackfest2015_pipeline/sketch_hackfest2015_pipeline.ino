@@ -20,7 +20,8 @@
 #define FLOWMETER_PIN 6
 
 #define FLAG2 "tU6yTmaXaSyIOSUC0PcUWkJgAnNIxGE2"    // update flag through SPI and AES128 decrypt it.
-#define FLAG3 "oKoupgMXvvILwFSwg0cULgkGWPKzA6YR"    // Do something sexy with the pipeline. Not implemented yet.
+#define FLAG3 "oKoupgMXvvILwFSwg0cULgkGWPKzA6YR"    // Reverse the small circuit and send the right message.
+                                                    // Unique Flag on the model.
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
@@ -207,7 +208,7 @@ void updateFlag(String args){
     FLAG_KEY[16] = (uint8_t)'\x00';
 
     // Encrypting flag
-    strncpy(FLAG_ENC, FLAG3, 16);
+    strncpy(FLAG_ENC, FLAG2, 16);
     aes128_enc_single(FLAG_KEY, FLAG_ENC);
   }else{
     Serial.println("Key too small");

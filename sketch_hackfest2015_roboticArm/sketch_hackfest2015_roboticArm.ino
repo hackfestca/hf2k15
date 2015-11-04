@@ -18,8 +18,8 @@
 #define M3 2
 #define M4 3
 
-#define FLAG4 "yADvkHWQBzO1QLvEb1g5HYeadTZm13FK"
-#define FLAG5 "E3Lrpcd35X8nUxTxjyBGVBgFJ2Id8xmp"
+#define FLAG5 "yADvkHWQBzO1QLvEb1g5HYeadTZm13FK"
+#define FLAG6 "E3Lrpcd35X8nUxTxjyBGVBgFJ2Id8xmp"
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *myMotor[4];
@@ -153,10 +153,10 @@ void stopMotor(){
 void sendFlag(){
   String flagValue;
 
-  if(lightLevel < 900){
-    flagValue = FLAG1;    
+  if(lightLevel < 800){
+    flagValue = FLAG5;    
   }else{
-    flagValue = FLAG2;
+    flagValue = FLAG6;
   }
   Serial.println("Sending flag!");
   SPI.transfer((void*)flagValue.c_str(),flagValue.length());

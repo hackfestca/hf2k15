@@ -1,8 +1,3 @@
-/* This code is given to players
- * 
- * 
-*/
-
 #include <Wire.h>   // Uno: A4 (SDA), A5 (SCL)
                     // Mega: 20 (SDA), 21 (SCL)
 #include <AESLib.h>   // https://github.com/DavyLandman/AESLib
@@ -25,14 +20,10 @@
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
-//#define LCD_CONTRAST_PIN  A3
-//#define LCD_CONTRAST      1000
 
 boolean FLAG_READY = false;
 uint8_t FLAG_KEY[17];
 char FLAG_ENC[17];
-
-String lastNews;
 
 /*
  * Flow meter related

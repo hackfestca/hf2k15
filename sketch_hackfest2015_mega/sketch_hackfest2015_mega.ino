@@ -8,6 +8,10 @@
                     // rpi: 2 (SDA), 3 (SCL)
 #include "U8glib.h"
 
+#include <SoftwareSerial.h>
+
+SoftwareSerial hydroSerial(50, 51); // RX, TX
+
 #define I2C_ADDRESS 0x04
 
 #define LED_PIN 13
@@ -28,6 +32,7 @@
 
 #define FLAG1 "Vk9xRcdsYSovkfNtiOQ6UwJoMBmhHneU"    // Serial
 #define FLAG4 "1bw1GLlNrqQrzBTxnGMWrpIBGJDa0m6v"    // qr code. Send the correct value.
+#define FLAG_HYDRO "922ec9531b1f94add983a8ce2ebdc97b" // Last flag of HydroHF
 
 U8GLIB_ST7920_128X64 u8g(22, 23, 2, U8G_PIN_NONE); // SPI connection, blanc, vert, orange
 
@@ -36,6 +41,8 @@ boolean FLAG_READY = false;
 String lastNews[6];
 String lastCountDown = "00:00:00";
 String lastTopTeams[3];
+
+String hydrohfPass = "Shutdown1337AlphaRomeo";
 
 #define hf7_width 64
 #define hf7_height 64
@@ -102,6 +109,12 @@ void setup(void) {
   u8g.setColorIndex(1);
 
   Serial.println("Ready!");
+
+  // Software serial of the Hydro Dam
+  hydroSerial.begin(9600);
+  hydroSerial.println("Hydro HF");
+  hydroSerial.println("");
+  hydroSerial.println(">");
 }
 
 void loop(void) {
@@ -109,9 +122,12 @@ void loop(void) {
   String msg;
   char cmd;
   String args;
+
+  // Draw Casino LCD
   draw();
 
   // Process serial inputs
+  // For troubleshooting only
   if (Serial.available() > 0) {
     while(Serial.available()) {
       c = (char)Serial.read();
@@ -125,7 +141,21 @@ void loop(void) {
     cmd = msg.substring(0,1).c_str()[0];
     args = msg.substring(1);
   
-    do_command(cmd,args);
+    do_casino_command(cmd,args);
+  }
+
+  // Process hydro HF inputs
+  msg = "";
+  c = '\x00';
+  if (hydroSerial.available() > 0) {
+    while(hydroSerial.available()) {
+      c = (char)hydroSerial.read();
+      msg += c;
+    }
+    Serial.print("HydroHF Serial: ");
+    Serial.println(msg);
+
+    do_hydro_command(msg);
   }
 }
 
@@ -147,14 +177,14 @@ void i2c_receiveData(int byteCount){
   cmd = msg.substring(0,1).c_str()[0];
   args = msg.substring(1);
 
-  do_command(cmd,args);
+  do_casino_command(cmd,args);
 }
 
 void i2c_sendData(){
 
 }
 
-void do_command(char cmd, String args){
+void do_casino_command(char cmd, String args){
   Serial.print("Processing command: ");
   Serial.println(cmd);
   switch (cmd) {
@@ -164,6 +194,26 @@ void do_command(char cmd, String args){
     case 'f': printFlag(args); break;    
     default: break;
   }  
+}
+
+void do_hydro_command(String cmd){
+  Serial.println(cmd);
+  if(cmd.equals("help")){
+    Serial.print("Processing command: ");
+    hydroSerial.println("  help             Display this help message");
+    hydroSerial.println("  shutdown <PASS>  Shutdown the dam");
+    hydroSerial.println("  flag             Display a flag");
+  }else if(cmd.substring(0,4) == "flag"){
+    Serial.print("Processing command: ");
+    hydroSerial.print("Congratz. Flag: ");
+    hydroSerial.println(FLAG1);
+  }else if(cmd.substring(0,8) == "shutdown" &&
+          cmd.substring(10,hydrohfPass.length()+10) == hydrohfPass){
+    Serial.print("Processing command: ");
+    hydroSerial.print("Congratz. Flag: ");
+    hydroSerial.println(FLAG_HYDRO);
+  }  
+  hydroSerial.println(">");
 }
 
 void updateCountDown(String args){

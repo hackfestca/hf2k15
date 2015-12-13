@@ -1,0 +1,7 @@
+@ECHO OFF
+
+:LOOPSTART
+ping -n 1 10.128.10.255 
+ping -n 30 127.0.0.1 > nul 2>&1
+
+GOTO LOOPSTART

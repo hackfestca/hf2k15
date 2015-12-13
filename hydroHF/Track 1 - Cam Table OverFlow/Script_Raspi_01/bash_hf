@@ -1,0 +1,11 @@
+#!/bin/bash
+while true
+do
+	python ssh_push.py
+	sleep 20
+	ping 10.2.2.110 -c 1
+	sleep 2
+	python ping.py
+	./ftp.sh
+
+done

@@ -1,0 +1,164 @@
+Building configuration...
+
+Current configuration : 3810 bytes
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Hydro_HF_Core_02
+!
+!
+no aaa new-model
+ip subnet-zero
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2415786752
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2415786752
+ revocation-check none
+ rsakeypair TP-self-signed-2415786752
+!
+!
+crypto pki certificate chain TP-self-signed-2415786752
+ certificate self-signed 01
+  30820247 308201B0 A0030201 02020101 300D0609 2A864886 F70D0101 04050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 32343135 37383637 3532301E 170D3933 30333031 30303031 
+  32335A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 34313537 
+  38363735 3230819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 
+  8100A9DD 80CC6049 86C2B30E ECE748C5 C8C9C1F0 9C3D6975 003F1115 0656F5D5 
+  1863247F 0EA38047 410B288F 3C3CDADB 1F0FDAB2 FCE2F0A5 764AA986 97FF68D8 
+  82D6BA62 EF154090 962BE195 99B6EDE4 5B423F4F 7390D8CB D92CAC4C EACB618C 
+  F683D72E AC47AE21 B6720CB4 BAF3EFB7 462790CF 12547EF5 13240044 B660ABE7 
+  359D0203 010001A3 6F306D30 0F060355 1D130101 FF040530 030101FF 301A0603 
+  551D1104 13301182 0F537769 7463682D 30322D63 6F72652E 301F0603 551D2304 
+  18301680 142B7818 6E97D928 56FF9952 12DE38AE C34A6F16 70301D06 03551D0E 
+  04160414 2B78186E 97D92856 FF995212 DE38AEC3 4A6F1670 300D0609 2A864886 
+  F70D0101 04050003 8181005D F204BCB9 E27002BD E9610BA0 8F345492 8F59A3DA 
+  4F857E6B 38DC658B 6E0362A8 366A2F58 59A77E2C CD9A5010 CB2C9B39 0EFDDC82 
+  D64F1402 A131B0B4 98023242 81684F34 0D20D316 0509417D C30BE23A 691E0B1C 
+  3082B3BD 9A06DA0E 700E4160 55AC361B 8340D07E 40C778E1 84F9F09D 98E20E61 
+  1CB941FB A0ED042B 3E44F0
+  quit    
+!         
+!         
+!         
+spanning-tree mode pvst
+spanning-tree portfast default
+spanning-tree extend system-id
+no spanning-tree vlan 1
+!         
+vlan internal allocation policy ascending
+!         
+!         
+!         
+!         
+!         
+!         
+interface FastEthernet0/1
+ switchport mode access
+!         
+interface FastEthernet0/2
+ switchport mode access
+!         
+interface FastEthernet0/3
+ switchport mode access
+!         
+interface FastEthernet0/4
+ switchport mode access
+!         
+interface FastEthernet0/5
+ switchport mode access
+!         
+interface FastEthernet0/6
+ switchport mode access
+!         
+interface FastEthernet0/7
+ switchport mode access
+!         
+interface FastEthernet0/8
+ switchport mode access
+!         
+interface FastEthernet0/9
+ switchport mode access
+!         
+interface FastEthernet0/10
+ switchport mode access
+!         
+interface FastEthernet0/11
+ switchport mode access
+!         
+interface FastEthernet0/12
+ switchport mode access
+!         
+interface FastEthernet0/13
+ switchport mode access
+!         
+interface FastEthernet0/14
+ switchport mode access
+!         
+interface FastEthernet0/15
+ switchport mode access
+!         
+interface FastEthernet0/16
+ switchport mode access
+!         
+interface FastEthernet0/17
+ switchport mode access
+!         
+interface FastEthernet0/18
+ switchport mode access
+!         
+interface FastEthernet0/19
+ switchport mode access
+!         
+interface FastEthernet0/20
+ switchport mode access
+!         
+interface FastEthernet0/21
+ switchport mode access
+!         
+interface FastEthernet0/22
+ switchport mode access
+!         
+interface FastEthernet0/23
+ switchport mode access
+!         
+interface FastEthernet0/24
+ switchport mode access
+!         
+interface GigabitEthernet0/1
+ switchport mode dynamic desirable
+!         
+interface GigabitEthernet0/2
+ switchport mode dynamic desirable
+!         
+interface Vlan1
+ ip address 10.2.2.2 255.255.255.0
+!         
+ip classless
+ip http server
+ip http secure-server
+!         
+!         
+no cdp run
+!         
+control-plane
+!         
+!         
+line con 0
+ logging synchronous
+ login local
+line vty 0 4
+ login local
+ transport input ssh
+line vty 5 15
+ login local
+!         
+end       
+          

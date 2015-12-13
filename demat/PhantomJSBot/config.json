@@ -1,0 +1,20 @@
+{
+	"share" : "c:\\temp",
+	"refresh" : 1000,
+	"logger" : {"libpath" : "./lib/filelogger", "options" : {"filepath" : "c:\\Temp\\"}},
+	"contextLocation" : "https://labs.demat.ctf.hf/",
+	"secret" : "DROPDOWNKABOOM",
+	"flag" : "Hs17K6LakjDeTeLlwoQ5gVGP",
+	"allowedTargets" : ["172.28.0.0/16"],
+	"cookies" : [{
+		"name"     : "FLAGPART3",
+		"value"    : "pCaq6M",
+		"domain"   : "labs.demat.ctf.hf",
+		"path"     : "/",
+		"httponly" : false,
+		"secure"   : false
+		}],
+	"INSECURE_SCHEME" : ["http", "ws", "ftp"],
+	"teams" : [{"id":"172.16.66","subnet":"172.16.66.0/24"}],
+	"services" : [{"url" : "https://172.28.71.13/", "method" : "POST", "flag" : "FLAG_SUCCESS"}]
+}
